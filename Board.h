@@ -21,4 +21,5 @@ BoardNode* insertDown(Piece piece);
 void insertRight(BoardNode* node, Piece piece);
 void printBoard();
 void connect();
+BoardNode* findPiece(std::string piecePosition);
 void move(Piece piece);

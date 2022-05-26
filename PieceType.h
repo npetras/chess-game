@@ -7,7 +7,8 @@
 
 #endif //CHESS_GAME_PIECETYPE_H
 
-
 enum PieceType {
     NONE, PAWN, ROOK, KNIGHT, BISHOP, KING, QUEEN
 };
+
+std::string pieceTypeToString(PieceType pieceType);

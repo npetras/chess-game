@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+
 #include "Board.h"
 
 BoardNode *head = nullptr;
@@ -50,11 +52,15 @@ void insertRight(BoardNode *node, Piece piece) {
 void printBoard() {
     BoardNode *p1 = head;
     BoardNode *p2 = head;
+    bool whiteSquare = WHITE;
+    int currRow = 8;
+
     for (; p1 != nullptr; p1 = p1->down) {
+        std::cout << currRow-- << " ";
         for (p2 = p1; p2 != nullptr; p2 = p2->right) {
             switch (p2->piece.pieceType) {
                 case NONE:
-                    std::cout << "-";
+                    std::cout << (whiteSquare ? "\u25A1" : "\u25A0");
                     break;
                 case PAWN:
                     std::cout << (p2->piece.light ? "\u2659" : "\u265F");
@@ -75,9 +81,17 @@ void printBoard() {
                     std::cout << (p2->piece.light ? "\u2655" : "\u265B");
                     break;
             }
+            whiteSquare = !whiteSquare;
         }
+        whiteSquare = !whiteSquare;
         std::cout << std::endl;
     }
+
+    std::cout << "  ";
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        std::cout << static_cast<char>(65 + i);
+    }
+    std::cout << std::endl;
 }
 
 void initialise() {
@@ -93,7 +107,6 @@ void initialise() {
 
 void populate() {
     populateDark();
-    bottomLeft->piece = {true, ROOK};
     populateLight();
 }
 
@@ -121,7 +134,7 @@ void populateDark() {
 }
 
 void populateLight() {
-    BoardNode* p = head;
+    BoardNode* p = bottomLeft;
     p->piece = {WHITE, ROOK};
     p = p->right;
     p->piece = {WHITE, KNIGHT};
@@ -138,7 +151,7 @@ void populateLight() {
     p = p->right;
     p->piece = {WHITE, ROOK};
 
-    for (p=head->down; p != nullptr ; p=p->right) {
+    for (p=bottomLeft->up; p != nullptr ; p=p->right) {
         p->piece = {WHITE, PAWN};
     }
 }
@@ -161,6 +174,26 @@ void connect() {
     } else {
         std::cout << "Head is nullptr, cannot connect" << std::endl;
     }
+}
+
+BoardNode* findPiece(std::string piecePosition) {
+    int row = (int)piecePosition[1] - 49;
+    int col = (int)piecePosition[0] - 65;
+
+    //    std::cout << row << std::endl;
+    //    std::cout << col << std::endl;
+
+    BoardNode* p = bottomLeft;
+
+    for (int i = 0; i < row; ++i) {
+        p = p->up;
+    }
+    for (int i = 0; i < col; ++i) {
+        p = p->right;
+    }
+
+    std::cout << p->piece.light << " " << pieceTypeToString(p->piece.pieceType) << std::endl;
+    return p;
 }
 
 void findPossibleMoves() {
