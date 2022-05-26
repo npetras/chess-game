@@ -7,5 +7,10 @@
 
 int main() {
     initialise();
+    printBoard();
+    Piece piece = Piece{true, PieceType::BISHOP};
+    move(piece);
+    std::cout << std::endl;
+    printBoard();
     return 0;
 }
