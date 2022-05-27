@@ -214,6 +214,7 @@ void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
         case KNIGHT:
             moveValid = isKnightMoveValid(pieceNode, squareToMoveTo);
             std::cout<<"KnightMoveValid: "<<moveValid<<std::endl;
+            break;
         case BISHOP:
             break;
         case KING:
