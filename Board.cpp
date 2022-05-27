@@ -286,3 +286,72 @@ bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
     return false;
 }
 
+bool isBishopMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    BoardNode* p = pieceNode;
+
+    if(p->up != nullptr && p->right != nullptr)
+        p = pieceNode->up->right;
+
+    while (p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        if (p->up != nullptr && p->right != nullptr)
+            p = pieceNode->up->right;
+    }
+
+    if (p->up != nullptr && p->left != nullptr)
+         p = pieceNode->up->left;
+    while (p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        if (p->up != nullptr && p->left != nullptr)
+            p = pieceNode->up->left;
+    }
+
+    if (p->down != nullptr && p->right != nullptr)
+        p = pieceNode->down->right;
+    while (p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        if (p->down != nullptr && p->right != nullptr)
+             p = pieceNode->down->right;
+    }
+
+    if (p->down != nullptr && p->left != nullptr)
+         p = pieceNode->down->left;
+    while (p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        if (p->down != nullptr && p->left != nullptr)
+             p = pieceNode->down->left;
+    }
+    return false;
+}
