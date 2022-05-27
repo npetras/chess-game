@@ -17,9 +17,13 @@ struct BoardNode {
 
 BoardNode* createNode(Piece piece);
 void initialise();
+void populate();
+void populateDark();
+void populateLight();
 BoardNode* insertDown(Piece piece);
 void insertRight(BoardNode* node, Piece piece);
 void printBoard();
 void connect();
-BoardNode* findPiece(std::string piecePosition);
-void move(Piece piece);
+BoardNode* findSquare(std::string boardPosition);
+void move(BoardNode* pieceNode, BoardNode* squareToMoveTo);
+bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo);

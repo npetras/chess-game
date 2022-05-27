@@ -6,12 +6,6 @@
 BoardNode *head = nullptr;
 BoardNode *bottomLeft = nullptr;
 
-void populate();
-
-void populateDark();
-
-void populateLight();
-
 BoardNode *createNode(Piece piece) {
     auto *newNode = new BoardNode();
     newNode->piece = piece;
@@ -151,6 +145,10 @@ void populateLight() {
     p = p->right;
     p->piece = {WHITE, ROOK};
 
+    p=bottomLeft;
+    p=p->up->up->up->right->right->right;
+    p->piece = {WHITE, ROOK};
+
     for (p=bottomLeft->up; p != nullptr ; p=p->right) {
         p->piece = {WHITE, PAWN};
     }
@@ -176,9 +174,10 @@ void connect() {
     }
 }
 
-BoardNode* findPiece(std::string piecePosition) {
-    int row = (int)piecePosition[1] - 49;
-    int col = (int)piecePosition[0] - 65;
+BoardNode* findSquare(std::string boardPosition) {
+
+    int row = (int)boardPosition[1] - 49;
+    int col = (int)boardPosition[0] - 65;
 
     //    std::cout << row << std::endl;
     //    std::cout << col << std::endl;
@@ -200,12 +199,94 @@ void findPossibleMoves() {
 
 }
 
-void move(Piece piece) {
-//    BoardNode* p = head;
-//    p = p->right->right->right->right->right->right->right;
-//    p = p->down->down->down->down->down->down->down;
-//    p = p->left->left->left->left->left->left->left;
-//    p = p->right;
-//    p = p->up->up->up->up->up->up->up;
-//    p->piece = piece;
+void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    bool moveValid;
+
+    switch (pieceNode->piece.pieceType) {
+        case NONE:
+            break;
+        case PAWN:
+            break;
+        case ROOK:
+            moveValid = isRookMoveValid(pieceNode, squareToMoveTo);
+            std::cout << "RookMoveValid: " << moveValid << std::endl;
+            break;
+        case KNIGHT:
+            break;
+        case BISHOP:
+            break;
+        case KING:
+            break;
+        case QUEEN:
+            break;
+    }
+    if (moveValid) {
+        squareToMoveTo->piece = pieceNode->piece;
+        pieceNode->piece = Piece{};
+    }
+
+}
+
+bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    BoardNode* p = pieceNode->up;
+
+    while(p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        p = p->up;
+    }
+
+    p = pieceNode->right;
+    while(p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        p = p->right;
+    }
+
+    p = pieceNode->down;
+    while(p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        p = p->down;
+    }
+
+    p = pieceNode->left;
+    while(p != nullptr) {
+        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+            break;
+        }
+        if (p == squareToMoveTo) {
+            return true;
+        }
+        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+            break;
+        }
+        p = p->left;
+    }
+    return false;
+}
+
+void movePawn() {
+
 }
