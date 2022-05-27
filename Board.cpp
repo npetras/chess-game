@@ -145,10 +145,6 @@ void populateLight() {
     p = p->right;
     p->piece = {WHITE, ROOK};
 
-    p=bottomLeft;
-    p=p->up->up->up->right->right->right;
-    p->piece = {WHITE, ROOK};
-
     for (p=bottomLeft->up; p != nullptr ; p=p->right) {
         p->piece = {WHITE, PAWN};
     }
@@ -199,30 +195,42 @@ void findPossibleMoves() {
 
 }
 
-void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+bool move(BoardNode* pieceNode, BoardNode* squareToMoveTo, bool whiteTurn) {
     bool moveValid;
 
-    switch (pieceNode->piece.pieceType) {
-        case NONE:
-            break;
-        case PAWN:
-            break;
-        case ROOK:
-            moveValid = isRookMoveValid(pieceNode, squareToMoveTo);
-//            std::cout << "RookMoveValid: " << moveValid << std::endl;
-            break;
-        case KNIGHT:
-            break;
-        case BISHOP:
-            break;
-        case KING:
-            break;
-        case QUEEN:
-            break;
-    }
-    if (moveValid) {
-        squareToMoveTo->piece = pieceNode->piece;
-        pieceNode->piece = Piece{};
+    if (whiteTurn == pieceNode->piece.light) {
+        switch (pieceNode->piece.pieceType) {
+            case NONE:
+                std::cout << "Error" << std::endl;
+                moveValid = false;
+                break;
+            case PAWN:
+                moveValid = isPawnMoveValid(pieceNode, squareToMoveTo);
+                std::cout << "isPawnMoveValid " << moveValid << std::endl;
+                break;
+            case ROOK:
+                moveValid = isRookMoveValid(pieceNode, squareToMoveTo);
+                break;
+            case KNIGHT:
+                moveValid = isKnightMoveValid(pieceNode, squareToMoveTo);
+                break;
+            case BISHOP:
+                moveValid = isBishopMoveValid(pieceNode, squareToMoveTo);
+                break;
+            case KING:
+                moveValid = isKingMoveValid(pieceNode, squareToMoveTo);
+                break;
+            case QUEEN:
+                moveValid = isRookMoveValid(pieceNode, squareToMoveTo) || isBishopMoveValid(pieceNode, squareToMoveTo);
+                break;
+        }
+        if (moveValid) {
+            squareToMoveTo->piece = pieceNode->piece;
+            pieceNode->piece = Piece{};
+        }
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -289,28 +297,28 @@ bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
 bool isKnightMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
     BoardNode* p =pieceNode;
     if(p->up != nullptr && p->up->up !=nullptr){
-        if(p->up->up->right == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->up->up->right == squareToMoveTo &&( p->up->up->right->piece.light != pieceNode->piece.light))
             return true;
-        if(p->up->up->left == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->up->up->left == squareToMoveTo &&( p->up->up->left->piece.light != pieceNode->piece.light))
             return true;
     }
 
     if(p->down != nullptr && p->down->down != nullptr){
-        if(p->down->down->right == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->down->down->right == squareToMoveTo &&( p->down->down->right->piece.light != pieceNode->piece.light))
             return true;
-        if(p->down->down->left == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->down->down->left == squareToMoveTo &&( p->down->down->left->piece.light != pieceNode->piece.light))
             return true;
     }
     if(p->left != nullptr && p->left->left != nullptr){
-        if(p->left->left->up == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->left->left->up == squareToMoveTo &&( p->left->left->up->piece.light != pieceNode->piece.light))
             return true;
-        if(p->left->left->down == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->left->left->down == squareToMoveTo &&( p->left->left->down->piece.light != pieceNode->piece.light))
             return true;
     }
     if(p->right != nullptr && p->right->right != nullptr){
-        if(p->right->right->up == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->right->right->up == squareToMoveTo &&( p->right->right->up->piece.light != pieceNode->piece.light))
             return true;
-        if(p->right->right->down == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+        if(p->right->right->down == squareToMoveTo &&( p->right->right->down->piece.light != pieceNode->piece.light))
             return true;
     }
 
@@ -320,69 +328,162 @@ bool isKnightMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
 bool isBishopMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
     BoardNode* p = pieceNode;
 
-    if(p->up != nullptr && p->right != nullptr)
+    if(p->up != nullptr && p->right != nullptr) {
         p = pieceNode->up->right;
+        while (p != nullptr) {
+            if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+                break;
+            }
+            if (p == squareToMoveTo) {
+                return true;
+            }
+            if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+                break;
+            }
 
-    while (p != nullptr) {
-        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
-            break;
+            if (p->up != nullptr && p->right != nullptr) {
+                p = p->up->right;
+            } else {
+                break;
+            }
         }
-        if (p == squareToMoveTo) {
-            return true;
-        }
-        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
-            break;
-        }
-        if (p->up != nullptr && p->right != nullptr)
-            p = pieceNode->up->right;
     }
 
-    if (p->up != nullptr && p->left != nullptr)
-         p = pieceNode->up->left;
-    while (p != nullptr) {
-        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
-            break;
+    p = pieceNode;
+    if (p->up != nullptr && p->left != nullptr) {
+        p = pieceNode->up->left;
+        while (p != nullptr) {
+            if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+                break;
+            }
+            if (p == squareToMoveTo) {
+                return true;
+            }
+            if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+                break;
+            }
+            if (p->up != nullptr && p->left != nullptr) {
+                p = p->up->left;
+            } else {
+                break;
+            }
         }
-        if (p == squareToMoveTo) {
-            return true;
-        }
-        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
-            break;
-        }
-        if (p->up != nullptr && p->left != nullptr)
-            p = pieceNode->up->left;
     }
 
-    if (p->down != nullptr && p->right != nullptr)
+    p = pieceNode;
+    if (p->down != nullptr && p->right != nullptr) {
         p = pieceNode->down->right;
-    while (p != nullptr) {
-        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
-            break;
+        while (p != nullptr) {
+            if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+                break;
+            }
+            if (p == squareToMoveTo) {
+                return true;
+            }
+            if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+                break;
+            }
+            if (p->down != nullptr && p->right != nullptr) {
+                p = p->down->right;
+            } else {
+                break;
+            }
         }
-        if (p == squareToMoveTo) {
-            return true;
-        }
-        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
-            break;
-        }
-        if (p->down != nullptr && p->right != nullptr)
-             p = pieceNode->down->right;
     }
 
-    if (p->down != nullptr && p->left != nullptr)
-         p = pieceNode->down->left;
-    while (p != nullptr) {
-        if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
-            break;
+    p = pieceNode;
+    if (p->down != nullptr && p->left != nullptr) {
+        p = pieceNode->down->left;
+        while (p != nullptr) {
+            if (p->piece.pieceType != NONE && p->piece.light == pieceNode->piece.light) {
+                break;
+            }
+            if (p == squareToMoveTo) {
+                return true;
+            }
+            if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
+                break;
+            }
+            if (p->down != nullptr && p->left != nullptr) {
+                p = p->down->left;
+            } else {
+                break;
+            }
         }
-        if (p == squareToMoveTo) {
+    }
+    return false;
+}
+
+
+bool isKingMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    BoardNode* p =pieceNode;
+    if(p->up != nullptr){
+        if(p->up == squareToMoveTo &&(p->up->piece.light != pieceNode->piece.light))
             return true;
+        if(p->up->left == squareToMoveTo &&(p->up->left->piece.light != pieceNode->piece.light))
+            return true;
+        if(p->up->right == squareToMoveTo &&(p->up->right->piece.light != pieceNode->piece.light))
+            return true;
+    }
+    if(p->down != nullptr){
+        if(p->down == squareToMoveTo &&(p->down->piece.light != pieceNode->piece.light))
+            return true;
+        if(p->down->left == squareToMoveTo &&(p->down->left->piece.light != pieceNode->piece.light))
+            return true;
+        if(p->down->right == squareToMoveTo &&(p->down->right->piece.light != pieceNode->piece.light))
+            return true;
+    }
+    if(p->right == squareToMoveTo &&(p->right->piece.light != pieceNode->piece.light))
+        return true;
+    if(p->left == squareToMoveTo &&(p->left->piece.light != pieceNode->piece.light))
+        return true;
+    return false;
+}
+
+bool isPawnMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    BoardNode* p = bottomLeft->up;
+    bool notMoved = false;
+    if(pieceNode->piece.light){
+        while(p!=nullptr){
+            if(p == pieceNode)
+                notMoved =true;
+            p = p->right;
         }
-        if (p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light) {
-            break;
+        p = pieceNode;
+        if(p->up == squareToMoveTo && p->up->piece.pieceType == NONE)
+            return true;
+        if(p->up != nullptr){
+            if(p->up->left == squareToMoveTo &&(p->up->left->piece.pieceType != NONE && p->up->left->piece.light != pieceNode->piece.light))
+                return true;
+            if(p->up->right == squareToMoveTo &&(p->up->right->piece.pieceType != NONE && p->up->right->piece.light != pieceNode->piece.light))
+                return true;
+            if(notMoved){
+                if(p->up->up == squareToMoveTo && p->up->up->piece.pieceType == NONE)
+                    return true;
+            }
         }
-        if (p->down != nullptr && p->left != nullptr)
-             p = pieceNode->down->left;
+
+    }else{
+        p = head->down;
+        while(p!=nullptr){
+            if(p == pieceNode)
+                notMoved =true;
+            p = p->right;
+        }
+        p = pieceNode;
+        if(p->down == squareToMoveTo && p->down->piece.pieceType == NONE)
+            return true;
+        if(p->down != nullptr){
+            if(p->down->left == squareToMoveTo &&(p->down->left->piece.pieceType != NONE && p->down->left->piece.light != pieceNode->piece.light))
+                return true;
+            if(p->down->right == squareToMoveTo &&(p->down->right->piece.pieceType != NONE && p->down->right->piece.light != pieceNode->piece.light))
+                return true;
+            if(notMoved){
+                if(p->down->down == squareToMoveTo && p->down->down->piece.pieceType == NONE)
+                    return true;
+            }
+        }
+
     }
     return false;
 }

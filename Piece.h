@@ -9,7 +9,7 @@
 
 #endif //CHESS_GAME_PIECE_H
 
-#define WHITE false
+#define WHITE true
 
 struct Piece {
     bool light;            // true->light false->black

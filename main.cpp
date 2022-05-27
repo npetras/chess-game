@@ -5,6 +5,24 @@
 
 #include "Board.h"
 
+bool isPositionInputValid(std::string piecePosition) {
+    bool isInvalid = true;
+
+    if (piecePosition.length() != 2) {
+        std::cout << "Wrong length" << std::endl;
+    } else if (!isalpha(piecePosition[0]) || piecePosition[0] < 65 || piecePosition[0] > 72) {
+        std::cout << "First character is not a valid letter" << std::endl;
+    } else if (!isdigit(piecePosition[1])
+               || piecePosition[1] < 49
+               || piecePosition[1] > 56) {
+        std::cout << static_cast<int>(piecePosition[1]);
+        std::cout << "Second character is not a valid digit" << std::endl;
+    } else {
+        isInvalid = false;
+    }
+    return isInvalid;
+}
+
 int main() {
 
     bool won = false;
@@ -20,27 +38,11 @@ int main() {
 
         // Check right format
 
-        while (true) {
+        bool isInvalid = true;
+        while (isInvalid) {
             std::cout << "Provide the piece position (e.g. 'A1'): ";
             std::getline(std::cin, piecePosition);
-
-            if (isalpha(piecePosition[0])) {
-                piecePosition[0] = (char)toupper(piecePosition[0]);
-            }
-
-            if (piecePosition.length() != 2) {
-                std::cout << "Wrong length" << std::endl;
-            } else if (!isalpha(piecePosition[0]) || piecePosition[0] < 65 || piecePosition[0] > 72) {
-                std::cout << "First character is not a valid letter" << std::endl;
-            } else if (!isdigit(piecePosition[1])
-                        || piecePosition[1] < 49
-                        || piecePosition[1] > 56) {
-                std::cout << static_cast<int>(piecePosition[1]);
-                std::cout << "Second character is not a valid digit" << std::endl;
-            } else {
-                std::cout << "correct input " << std::endl;
-                break;
-            }
+            isInvalid = isPositionInputValid(piecePosition);
         }
 
         BoardNode* pieceNode = findSquare(piecePosition);
@@ -56,10 +58,23 @@ int main() {
             }
         }
 
-//        std::string newPosition;
-//
-        BoardNode* squareToMoveTo = findSquare("D3");
-        move(pieceNode, squareToMoveTo);
+        std::string newPosition;
+        isInvalid = true;
+
+        while (isInvalid) {
+            std::cout << "Enter where you want the " << pieceTypeToString(pieceNode->piece.pieceType) << " "
+                      << "at position " << piecePosition << " to be moved: ";
+            getline(std::cin, newPosition);
+            getline(std::cin, newPosition);
+            isInvalid = isPositionInputValid(newPosition);
+        }
+
+        BoardNode* squareToMoveTo = findSquare(newPosition);
+        if (move(pieceNode, squareToMoveTo, whiteTurn)) {
+            whiteTurn = !whiteTurn;
+        } else {
+            std::cout << "You tried to move an opponent's piece\n";
+        }
 
         std::cout << std::endl;
     } while(true);
