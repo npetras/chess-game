@@ -191,7 +191,7 @@ BoardNode* findSquare(std::string boardPosition) {
         p = p->right;
     }
 
-    std::cout << p->piece.light << " " << pieceTypeToString(p->piece.pieceType) << std::endl;
+//    std::cout << p->piece.light << " " << pieceTypeToString(p->piece.pieceType) << std::endl;
     return p;
 }
 
@@ -209,7 +209,7 @@ void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
             break;
         case ROOK:
             moveValid = isRookMoveValid(pieceNode, squareToMoveTo);
-            std::cout << "RookMoveValid: " << moveValid << std::endl;
+//            std::cout << "RookMoveValid: " << moveValid << std::endl;
             break;
         case KNIGHT:
             break;
@@ -224,7 +224,6 @@ void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
         squareToMoveTo->piece = pieceNode->piece;
         pieceNode->piece = Piece{};
     }
-
 }
 
 bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
@@ -287,6 +286,3 @@ bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
     return false;
 }
 
-void movePawn() {
-
-}
