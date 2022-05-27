@@ -212,7 +212,8 @@ void move(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
             std::cout << "RookMoveValid: " << moveValid << std::endl;
             break;
         case KNIGHT:
-            break;
+            moveValid = isKnightMoveValid(pieceNode, squareToMoveTo);
+            std::cout<<"KnightMoveValid: "<<moveValid<<std::endl;
         case BISHOP:
             break;
         case KING:
@@ -286,6 +287,39 @@ bool isRookMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
     }
     return false;
 }
+
+bool isKnightMoveValid(BoardNode* pieceNode, BoardNode* squareToMoveTo) {
+    BoardNode* p =pieceNode;
+	if(p->up != nullptr && p->up->up !=nullptr){
+		if(p->up->up->right == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;
+		if(p->up->up->left == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;
+	}
+	
+	if(p->down != nullptr && p->down->down != nullptr){
+ 		if(p->down->down->right == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;  
+		if(p->down->down->left == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;
+	}
+	if(p->left != nullptr && p->left->left != nullptr){
+		if(p->left->left->up == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;
+ 		if(p->left->left->down == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true; 
+	}
+	if(p->right != nullptr && p->right->right != nullptr){
+		if(p->right->right->up == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true; 
+		if(p->right->right->down == squareToMoveTo &&(p->piece.pieceType != NONE && p->piece.light != pieceNode->piece.light))
+			return true;
+	}
+    
+    return false;
+}
+
+
 
 void movePawn() {
 
